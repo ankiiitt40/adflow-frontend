@@ -10,7 +10,9 @@ import {
   LogOut,
   ChevronRight,
   Menu,
-  X
+  X,
+  BookOpen,
+  Activity
 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -21,7 +23,8 @@ const navItems = [
   { name: 'Leads', icon: Zap, path: '/leads', permission: 'leads' },
   { name: 'Team', icon: Users, path: '/team', permission: 'owner' },
   { name: 'Ads', icon: Megaphone, path: '/ads', permission: 'ads' },
-  { name: 'Automation', icon: Zap, path: '/automation', permission: 'automation' },
+  { name: 'Automation', icon: Activity, path: '/automation', permission: 'automation' },
+  { name: 'Guide', icon: BookOpen, path: '/docs', permission: 'dashboard' },
   { name: 'Settings', icon: Settings, path: '/settings', permission: 'settings' },
 ];
 
