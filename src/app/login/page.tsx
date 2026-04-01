@@ -59,31 +59,25 @@ export default function LoginPage() {
                         <CardDescription>Enter your credentials to access your dashboard.</CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <form onSubmit={handleLogin} className="space-y-5">
-                            <div className="relative">
-                                <Mail className="absolute left-3.5 top-[38px] -translate-y-1/2 text-gray-400 z-10" size={18} />
-                                <Input
-                                    label="Email address"
-                                    type="email"
-                                    placeholder="name@company.com"
-                                    className="pl-10"
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
-                                    required
-                                />
-                            </div>
-                            <div className="relative">
-                                <Lock className="absolute left-3.5 top-[38px] -translate-y-1/2 text-gray-400 z-10" size={18} />
-                                <Input
-                                    label="Password"
-                                    type="password"
-                                    placeholder="••••••••"
-                                    className="pl-10"
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
-                                    required
-                                />
-                            </div>
+                        <form onSubmit={handleLogin} className="space-y-6">
+                            <Input
+                                label="Email address"
+                                type="email"
+                                placeholder="name@company.com"
+                                icon={<Mail size={18} />}
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                required
+                            />
+                            <Input
+                                label="Password"
+                                type="password"
+                                placeholder="••••••••"
+                                icon={<Lock size={18} />}
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                required
+                            />
                             {error && <p className="text-xs text-red-500 font-bold text-center mt-2">{error}</p>}
                             <Button type="submit" className="w-full h-11 text-sm font-bold" isLoading={loading}>
                                 Sign In

@@ -58,54 +58,47 @@ export default function SignupPage() {
                         <CardDescription>Join AdFlow and take control of your lead generation.</CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <form onSubmit={handleSignup} className="space-y-5">
-                            <div className="relative">
-                                <User className="absolute left-3.5 top-[38px] -translate-y-1/2 text-gray-400 z-10" size={18} />
-                                <Input
-                                    label="Full Name"
-                                    placeholder="John Doe"
-                                    className="pl-10"
-                                    value={name}
-                                    onChange={(e) => setName(e.target.value)}
-                                    required
-                                />
-                            </div>
-                            <div className="relative">
-                                <Mail className="absolute left-3.5 top-[38px] -translate-y-1/2 text-gray-400 z-10" size={18} />
-                                <Input
-                                    label="Email address"
-                                    type="email"
-                                    placeholder="name@company.com"
-                                    className="pl-10"
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
-                                    required
-                                />
-                            </div>
-                            <div className="relative">
-                                <Lock className="absolute left-3.5 top-[38px] -translate-y-1/2 text-gray-400 z-10" size={18} />
-                                <Input
-                                    label="Password"
-                                    type="password"
-                                    placeholder="••••••••"
-                                    className="pl-10"
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
-                                    required
-                                />
-                            </div>
-                            <div className="relative">
-                                <Shield className="absolute left-3.5 top-[38px] -translate-y-1/2 text-gray-400 z-10" size={18} />
-                                <div className="space-y-1.5">
-                                    <label className="block text-sm font-medium text-gray-700 ml-1">Account Role</label>
+                        <form onSubmit={handleSignup} className="space-y-6">
+                            <Input
+                                label="Full Name"
+                                placeholder="John Doe"
+                                icon={<User size={18} />}
+                                value={name}
+                                onChange={(e) => setName(e.target.value)}
+                                required
+                            />
+                            <Input
+                                label="Email address"
+                                type="email"
+                                placeholder="name@company.com"
+                                icon={<Mail size={18} />}
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                required
+                            />
+                            <Input
+                                label="Password"
+                                type="password"
+                                placeholder="••••••••"
+                                icon={<Lock size={18} />}
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                required
+                            />
+                            <div className="space-y-1.5">
+                                <label className="block text-sm font-medium text-gray-700 ml-1">Account Role</label>
+                                <div className="relative group">
+                                    <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 z-10 transition-colors group-focus-within:text-black">
+                                        <Shield size={18} />
+                                    </div>
                                     <select
-                                        className="flex h-11 w-full rounded-2xl border border-gray-200 bg-white pl-10 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 transition-all shadow-sm hover:border-gray-300"
+                                        className="flex h-12 w-full rounded-2xl border border-gray-200 bg-white pl-11 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 transition-all shadow-sm hover:border-gray-300"
                                         value={role}
                                         onChange={(e) => setRole(e.target.value)}
                                     >
-                                        <option value="Owner">Owner</option>
+                                        <option value="Owner">Owner (Full Control)</option>
                                         <option value="Manager">Manager</option>
-                                        <option value="Agent">Agent</option>
+                                        <option value="Agent">Agent (Sales Seat)</option>
                                     </select>
                                 </div>
                             </div>
