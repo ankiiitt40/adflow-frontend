@@ -16,7 +16,8 @@ import {
   ArrowRight,
   TrendingUp,
   Zap,
-  RotateCw
+  RotateCw,
+  Download
 } from 'lucide-react';
 import axios from 'axios';
 import { useAuth } from '@/hooks/useAuth';
@@ -164,6 +165,32 @@ export default function LeadsPage() {
         }
     };
 
+    const downloadCSV = () => {
+        if (leads.length === 0) return toast('No data to export!', 'error');
+        
+        const headers = ['Name', 'Phone', 'Source', 'Status', 'Score', 'AI Insights', 'Temperature'];
+        const csvRows = leads.map(l => [
+            `"${l.name}"`,
+            `"${l.phone}"`,
+            `"${l.source}"`,
+            `"${l.status}"`,
+            `"${l.score}"`,
+            `"${(l.aiInsights || '').replace(/"/g, '""')}"`,
+            `"${l.temperature || 'Unknown'}"`
+        ]);
+        
+        const csvContent = headers.join(',') + '\n' + csvRows.map(row => row.join(',')).join('\n');
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.setAttribute('href', url);
+        link.setAttribute('download', `adflow_leads_${new Date().toISOString().split('T')[0]}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        toast('Lead Matrix Exported!', 'success');
+    };
+
     const filteredLeads = leads.filter(l => 
         l.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         l.phone.includes(searchTerm)
@@ -191,6 +218,14 @@ export default function LeadsPage() {
                                 Simulate Capture
                             </button>
                         )}
+                        <Button 
+                            onClick={downloadCSV} 
+                            className="bg-white border-2 border-gray-100 text-gray-500 h-12 px-6 rounded-2xl font-black hover:bg-gray-50 hover:border-black hover:text-black transition-luxury shadow-lg"
+                            title="Export to CSV"
+                        >
+                            <Download size={20} className="mr-2" />
+                            Export
+                        </Button>
                         <Button onClick={() => setIsLeadModalOpen(true)} className="bg-white border-2 border-black text-black h-12 px-8 rounded-2xl font-black hover:bg-black hover:text-white transition-luxury shadow-lg">
                             <Plus size={20} className="mr-2" />
                             Direct Lead
