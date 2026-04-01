@@ -16,10 +16,12 @@ import { API_BASE, API_URL } from '@/config/api';
 const PLATFORM_STEPS = {
     meta: {
         id: 'meta', title: 'Meta Ecosystem', color: 'indigo',
+        link: 'https://business.facebook.com/latest/ads_manager',
         steps: ['Ads Manager > Form Settings', 'Webhook CRM Config', 'Paste Signal Node URL', 'Verify Connection']
     },
     google: {
         id: 'google', title: 'Google Network', color: 'amber',
+        link: 'https://ads.google.com/nav/conversions',
         steps: ['Conversions > Lead Forms', 'Webhook Setup', 'Paste Signal Node URL', 'Test Handshake']
     }
 };
@@ -134,9 +136,11 @@ export default function AdsPage() {
                                                             <p className="text-[10px] text-gray-400 font-bold italic" dangerouslySetInnerHTML={{ __html: step.replace(/\*\*(.*?)\*\*/g, '<b class="text-black font-black">$1</b>') }} />
                                                         </div>
                                                     ))}
-                                                    <Button className="w-full bg-white text-black border border-gray-100 rounded-xl h-10 text-[9px] uppercase font-black tracking-widest hover:bg-black hover:text-white transition-all">
-                                                       Open Dashboard <ArrowUpRight size={14} className="ml-1" />
-                                                    </Button>
+                                                    <a href={(platform as any).link} target="_blank" rel="noopener noreferrer">
+                                                        <Button className="w-full bg-white text-black border border-gray-100 rounded-xl h-10 text-[9px] uppercase font-black tracking-widest hover:bg-black hover:text-white transition-all">
+                                                           Open Dashboard <ArrowUpRight size={14} className="ml-1" />
+                                                        </Button>
+                                                    </a>
                                                 </div>
                                             )}
                                         </div>
