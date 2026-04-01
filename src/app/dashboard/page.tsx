@@ -117,8 +117,8 @@ export default function DashboardPage() {
                                 </div>
                             </CardHeader>
                             <CardContent className="p-4 md:p-8 pt-0">
-                                <div className="h-64 sm:h-80 w-full">
-                                    {loading ? <Skeleton className="w-full h-full rounded-2xl" /> : (
+                                <div className="h-72 sm:h-80 w-full min-h-[280px]">
+                                    {loading || !analytics ? <Skeleton className="w-full h-full rounded-2xl" /> : (
                                         <ResponsiveContainer width="100%" height="100%">
                                             <AreaChart data={analytics?.dayData || []}>
                                                 <defs>
@@ -151,8 +151,8 @@ export default function DashboardPage() {
                                     </div>
                                 </CardHeader>
                                 <CardContent className="p-6 md:p-8 pt-0">
-                                    <div className="h-64 w-full">
-                                        {loading ? <Skeleton className="w-full h-full" /> : (
+                                    <div className="h-72 w-full min-h-[280px]">
+                                        {loading || !analytics ? <Skeleton className="w-full h-full" /> : (
                                             <ResponsiveContainer width="100%" height="100%">
                                                 <BarChart data={analytics?.sourceData || []}>
                                                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
@@ -177,8 +177,8 @@ export default function DashboardPage() {
                                     </div>
                                 </CardHeader>
                                 <CardContent className="p-6 md:p-8 pt-0">
-                                    <div className="h-64 w-full">
-                                        {loading ? <Skeleton className="w-full h-full" /> : (
+                                    <div className="h-72 w-full min-h-[280px]">
+                                        {loading || !analytics ? <Skeleton className="w-full h-full" /> : (
                                             <ResponsiveContainer width="100%" height="100%">
                                                 <PieChart>
                                                     <Pie

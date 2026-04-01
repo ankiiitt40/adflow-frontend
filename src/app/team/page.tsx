@@ -17,6 +17,10 @@ export default function TeamPage() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [newAgent, setNewAgent] = useState({ name: '', email: '', password: '' });
     const [searchTerm, setSearchTerm] = useState('');
+    const [searchEmail, setSearchEmail] = useState('');
+    const [foundUser, setFoundUser] = useState<any>(null);
+    const [searchLoading, setSearchLoading] = useState(false);
+    const [addMode, setAddMode] = useState<'create' | 'recruit'>('create');
 
     useEffect(() => {
         fetchTeam();
@@ -51,6 +55,41 @@ export default function TeamPage() {
             }
         } catch (err: any) {
             alert(err.response?.data?.error || 'Registration failed');
+        }
+    };
+
+    const handleSearchUser = async () => {
+        try {
+            setSearchLoading(true);
+            const token = localStorage.getItem('token');
+            const res = await axios.get(`${API_BASE}/users/search?email=${searchEmail}`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            if (res.data.success) {
+                setFoundUser(res.data.data);
+            }
+        } catch (err) {
+            alert('Entity not found in global directory');
+        } finally {
+            setSearchLoading(false);
+        }
+    };
+
+    const handleRecruitUser = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            const res = await axios.post(`${API_BASE}/users/invite`, { email: foundUser.email }, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            if (res.data.success) {
+                setIsModalOpen(false);
+                setFoundUser(null);
+                setSearchEmail('');
+                fetchTeam();
+                alert('Entity recruited to strategic unit');
+            }
+        } catch (err) {
+            alert('Recruitment failed');
         }
     };
 
@@ -223,64 +262,124 @@ export default function TeamPage() {
                             initial={{ opacity: 0, scale: 0.9, y: 20 }}
                             animate={{ opacity: 1, scale: 1, y: 0 }}
                             exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                            className="bg-white w-full max-lg rounded-[3.5rem] shadow-3xl p-12 relative overflow-hidden"
+                            className="bg-white w-full max-w-2xl rounded-[2rem] md:rounded-[3.5rem] shadow-3xl p-6 md:p-12 relative overflow-hidden max-h-[90vh] overflow-y-auto"
                         >
-                            <div className="absolute top-0 right-0 w-32 h-32 bg-gray-50 rounded-full -mr-16 -mt-16 pointer-events-none" />
+                            <div className="absolute top-0 right-0 w-24 h-24 md:w-32 md:h-32 bg-gray-50 rounded-full -mr-12 -mt-12 md:-mr-16 md:-mt-16 pointer-events-none" />
                             
-                            <h2 className="text-4xl font-black text-black tracking-tighter mb-2">Deploy Agent.</h2>
-                            <p className="text-gray-400 font-medium mb-10">Expand your network with top-tier talent.</p>
+                            <h2 className="text-2xl md:text-4xl font-black text-black tracking-tighter mb-2">Deploy Agent.</h2>
+                            <p className="text-xs md:text-sm text-gray-400 font-medium mb-6 md:mb-8">Expand your network with top-tier talent.</p>
+
+                            <div className="flex bg-gray-50 p-1.5 rounded-xl md:rounded-2xl mb-6 md:mb-8 overflow-x-auto">
+                                <button 
+                                    onClick={() => setAddMode('create')}
+                                    className={`flex-1 py-3 text-[10px] font-black uppercase rounded-xl transition-all ${addMode === 'create' ? 'bg-white shadow-lg text-black' : 'text-gray-400 hover:text-black'}`}
+                                >
+                                    Create New Account
+                                </button>
+                                <button 
+                                    onClick={() => setAddMode('recruit')}
+                                    className={`flex-1 py-3 text-[10px] font-black uppercase rounded-xl transition-all ${addMode === 'recruit' ? 'bg-white shadow-lg text-black' : 'text-gray-400 hover:text-black'}`}
+                                >
+                                    Recruit from Directory
+                                </button>
+                            </div>
                             
-                            <form onSubmit={handleAddAgent} className="space-y-6 relative z-10">
-                                <div className="space-y-1.5">
-                                    <label className="text-[10px] font-black uppercase text-gray-400 tracking-[0.2em] ml-2">Identity Signature</label>
-                                    <input 
-                                        type="text" 
-                                        className="w-full px-6 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-black/5 focus:bg-white outline-none font-bold transition-all"
-                                        placeholder="Full Name"
-                                        required
-                                        value={newAgent.name}
-                                        onChange={e => setNewAgent({...newAgent, name: e.target.value})}
-                                    />
+                            {addMode === 'create' ? (
+                                <form onSubmit={handleAddAgent} className="space-y-6 relative z-10">
+                                    <div className="space-y-1.5">
+                                        <label className="text-[10px] font-black uppercase text-gray-400 tracking-[0.2em] ml-2">Identity Signature</label>
+                                        <input 
+                                            type="text" 
+                                            className="w-full px-6 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-black/5 focus:bg-white outline-none font-bold transition-all"
+                                            placeholder="Full Name"
+                                            required
+                                            value={newAgent.name}
+                                            onChange={e => setNewAgent({...newAgent, name: e.target.value})}
+                                        />
+                                    </div>
+                                    <div className="space-y-1.5">
+                                        <label className="text-[10px] font-black uppercase text-gray-400 tracking-[0.2em] ml-2">Access Terminal (Email)</label>
+                                        <input 
+                                            type="email" 
+                                            className="w-full px-6 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-black/5 focus:bg-white outline-none font-bold transition-all"
+                                            placeholder="agent@adflow.ai"
+                                            required
+                                            value={newAgent.email}
+                                            onChange={e => setNewAgent({...newAgent, email: e.target.value})}
+                                        />
+                                    </div>
+                                    <div className="space-y-1.5">
+                                        <label className="text-[10px] font-black uppercase text-gray-400 tracking-[0.2em] ml-2">Secure Passkey</label>
+                                        <input 
+                                            type="password" 
+                                            className="w-full px-6 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-black/5 focus:bg-white outline-none font-bold transition-all"
+                                            placeholder="••••••••"
+                                            required
+                                            value={newAgent.password}
+                                            onChange={e => setNewAgent({...newAgent, password: e.target.value})}
+                                        />
+                                    </div>
+                                    
+                                    <div className="flex flex-col sm:flex-row gap-4 pt-6">
+                                        <button 
+                                            type="button" 
+                                            onClick={() => setIsModalOpen(false)} 
+                                            className="flex-1 px-8 py-5 rounded-2xl font-black text-xs uppercase text-gray-400 hover:bg-gray-50 transition-all"
+                                        >
+                                            Abort Mission
+                                        </button>
+                                        <button 
+                                            type="submit" 
+                                            className="flex-1 px-8 py-5 bg-black text-white rounded-2xl font-black text-xs uppercase shadow-2xl shadow-black/20 hover:translate-y-[-2px] active:translate-y-[0px] transition-all"
+                                        >
+                                            Confirm Deployment
+                                        </button>
+                                    </div>
+                                </form>
+                            ) : (
+                                <div className="space-y-6 animate-in slide-in-from-bottom duration-500">
+                                    <div className="space-y-1.5">
+                                        <label className="text-[10px] font-black uppercase text-gray-400 tracking-[0.2em] ml-2">Global Directory Search</label>
+                                        <div className="flex flex-col sm:flex-row gap-2">
+                                            <input 
+                                                type="email" 
+                                                className="flex-1 px-5 py-4 bg-gray-50 border border-gray-100 rounded-xl md:rounded-2xl focus:ring-2 focus:ring-black/5 focus:bg-white outline-none font-bold transition-all text-sm"
+                                                placeholder="Search by registered email..."
+                                                value={searchEmail}
+                                                onChange={e => setSearchEmail(e.target.value)}
+                                            />
+                                            <button 
+                                                onClick={handleSearchUser}
+                                                disabled={searchLoading}
+                                                className="h-14 sm:h-auto px-8 bg-black text-white rounded-xl md:rounded-2xl font-black text-xs uppercase hover:bg-gray-800 disabled:opacity-50"
+                                            >
+                                                Scan
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    {foundUser && (
+                                        <motion.div 
+                                            initial={{ opacity: 0, scale: 0.95 }}
+                                            animate={{ opacity: 1, scale: 1 }}
+                                            className="p-6 md:p-8 bg-gray-50 rounded-[2rem] border border-gray-100 text-center"
+                                        >
+                                            <div className="w-12 h-12 md:w-16 md:h-16 bg-white mx-auto rounded-full flex items-center justify-center font-black text-xl md:text-2xl shadow-lg border border-gray-50 mb-4">
+                                                {foundUser.name[0]}
+                                            </div>
+                                            <h4 className="text-lg md:text-xl font-black text-black tracking-tight">{foundUser.name}</h4>
+                                            <p className="text-[10px] md:text-xs font-bold text-gray-400 mb-6">{foundUser.email}</p>
+                                            
+                                            <button 
+                                                onClick={handleRecruitUser}
+                                                className="w-full h-12 md:h-14 bg-black text-white rounded-xl md:rounded-2xl font-black text-xs uppercase shadow-2xl shadow-black/10 hover:scale-105 transition-all"
+                                            >
+                                                Recruit Agent
+                                            </button>
+                                        </motion.div>
+                                    )}
                                 </div>
-                                <div className="space-y-1.5">
-                                    <label className="text-[10px] font-black uppercase text-gray-400 tracking-[0.2em] ml-2">Access Terminal (Email)</label>
-                                    <input 
-                                        type="email" 
-                                        className="w-full px-6 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-black/5 focus:bg-white outline-none font-bold transition-all"
-                                        placeholder="agent@adflow.ai"
-                                        required
-                                        value={newAgent.email}
-                                        onChange={e => setNewAgent({...newAgent, email: e.target.value})}
-                                    />
-                                </div>
-                                <div className="space-y-1.5">
-                                    <label className="text-[10px] font-black uppercase text-gray-400 tracking-[0.2em] ml-2">Secure Passkey</label>
-                                    <input 
-                                        type="password" 
-                                        className="w-full px-6 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-black/5 focus:bg-white outline-none font-bold transition-all"
-                                        placeholder="••••••••"
-                                        required
-                                        value={newAgent.password}
-                                        onChange={e => setNewAgent({...newAgent, password: e.target.value})}
-                                    />
-                                </div>
-                                
-                                <div className="flex flex-col sm:flex-row gap-4 pt-6">
-                                    <button 
-                                        type="button" 
-                                        onClick={() => setIsModalOpen(false)} 
-                                        className="flex-1 px-8 py-5 rounded-2xl font-black text-xs uppercase text-gray-400 hover:bg-gray-50 transition-all"
-                                    >
-                                        Abort Mission
-                                    </button>
-                                    <button 
-                                        type="submit" 
-                                        className="flex-1 px-8 py-5 bg-black text-white rounded-2xl font-black text-xs uppercase shadow-2xl shadow-black/20 hover:translate-y-[-2px] active:translate-y-[0px] transition-all"
-                                    >
-                                        Confirm Deployment
-                                    </button>
-                                </div>
-                            </form>
+                            )}
                         </motion.div>
                     </div>
                 )}
